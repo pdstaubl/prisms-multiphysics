@@ -157,7 +157,7 @@ public:
 
   std::vector<const AffineConstraints<double>*>& getConstraintsOtherSet();
 
-  void getOutputResults();
+  void doOutputResults();
 
   double& getCurrentTime();
 

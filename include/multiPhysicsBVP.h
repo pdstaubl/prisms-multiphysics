@@ -110,9 +110,6 @@ protected:
   virtual std::vector<const AffineConstraints<double> *> &
   getConstraintsOtherSet() = 0;
 
-  virtual void
-  getOutputResults() = 0;
-
   virtual double &
   getCurrentTime_pf() = 0;
 

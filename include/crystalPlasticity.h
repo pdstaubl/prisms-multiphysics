@@ -91,8 +91,6 @@ private:
 
   std::vector<const AffineConstraints<double>*>& getConstraintsOtherSet() override;
 
-  void getOutputResults() override;
-
   double& getCurrentTime_pf() override;
 
   unsigned int& getCurrentIncrement_pf() override;

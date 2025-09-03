@@ -139,13 +139,6 @@ crystalPlasticity<dim>::getConstraintsOtherSet()
 }
 
 template <int dim>
-void
-crystalPlasticity<dim>::getOutputResults()
-{
-  return pf_object.getOutputResults();
-}
-
-template <int dim>
 double &
 crystalPlasticity<dim>::getCurrentTime_pf()
 {

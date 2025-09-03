@@ -88,9 +88,9 @@ std::vector<const dealii::AffineConstraints<double>*>& MatrixFreePDE<dim,degree>
 }
 
 template<int dim, int degree>
-void MatrixFreePDE<dim,degree>::getOutputResults()
+void MatrixFreePDE<dim,degree>::doOutputResults()
 {
-    return outputResults();
+    outputResults();
 }
 
 template<int dim, int degree>

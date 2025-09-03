@@ -34,7 +34,7 @@ void MultiPhysicsBVP<dim, degree>::solve_cp() {
   }
 
   //Output Result for initial conditions
-  pf_obj.getOutputResults();
+  pf_obj.doOutputResults();
   //currentOutput++;
   pf_obj.getCurrentOutput() += 1;
 
@@ -254,7 +254,7 @@ void MultiPhysicsBVP<dim, degree>::solve_cp() {
 
           if (userInputs_pf.outputTimeStepList[pf_obj.getCurrentOutput()] == pf_obj.getCurrentIncrement()){
           //Output Results
-          pf_obj.getOutputResults();
+          pf_obj.doOutputResults();
           pf_obj.getCurrentOutput() += 1;
           }
           /*
