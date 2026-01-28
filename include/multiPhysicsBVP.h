@@ -43,6 +43,8 @@ public:
   virtual void
   run();
 
+  // TODO: determine why there are duplicates here, and decide whether they can be merged
+  // orientations belongs to crystalPlasticity, while orientations_Mesh is here.
   crystalOrientationsIO<dim> orientations_Mesh;
 
   // Parallel output stream

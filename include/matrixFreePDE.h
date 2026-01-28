@@ -15,6 +15,7 @@
 
 // PRISMS-Plasticity headers
 #include "userInputParameters_cp.h"
+#include "crystalOrientationsIO.h"
 
 // macro for constants
 #define constV(a) make_vectorized_array(a)
@@ -175,6 +176,14 @@ public:
    */
   virtual void
   solveIncrement(bool skip_time_dependent);
+
+  /**
+   * PRISMS-MP: Store a reference to the CPFE orientations object, such that
+   * the PF model can access the input grain orientations without reloading the
+   * input files. Note that the CPFE mesh is likely not the same as the PF mesh,
+   * so use getMaterialID(coord) and then access eulerAngles[materialID]
+   */
+  crystalOrientationsIO<dim> &cpfe_orientations;
 
 protected:
   userInputParameters_pf<dim> userInputs;

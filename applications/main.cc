@@ -59,6 +59,9 @@ int main (int argc, char **argv)
       
       problem.orientations.loadOrientationVector(userInputs_cp.grainOrientationsFile, userInputs_cp.enableMultiphase, userInputs_cp.additionalVoxelInfo);
 
+      // Store a reference to the orientations to customPDE so they can be used in the phase-field model
+      pf_problem.cpfe_orientations = &problem.orientations;
+
       problem.run();
     }
   catch (std::exception &exc)
