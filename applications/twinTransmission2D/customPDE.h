@@ -80,7 +80,7 @@ private:
     double del0;
 
     // A function for this subclass to convert Rodrigues vectors to rotation matrices
-    void rodrigues_to_rotmat(dealii::Tensor<2, dim> &OrientationMatrix, dealii::Tensor<1, dim> r);
+    void rodrigues_to_rotmat(dealii::Tensor<2, dim> &OrientationMatrix, dealii::Tensor<1, dim> r) const;
 
 	// ================================================================
 };
