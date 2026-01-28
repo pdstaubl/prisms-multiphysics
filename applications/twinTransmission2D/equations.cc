@@ -70,20 +70,20 @@ void customPDE<dim,degree>::explicitEquationRHS(variableContainer<dim,degree,dea
 	scalarvalueType_pf strain_df= variable_list.get_scalar_value(2);
 
 	// Get the materialID (a.k.a. grainID) from CPFE for this mesh point
-	double[] coords = {q_point_loc[0], q_point_loc[1], q_point_loc[2]};
-	int materialID = cpfe_orientations.getMaterialID(coords);
+	double coords[3] = {q_point_loc[0], q_point_loc[1], q_point_loc[2]};
+	int materialID = this->cpfe_orientations->getMaterialID(coords);
 
 	// Get the crystal orientation as a Rodrigues vector from CPFE
 	// (note: although the variable is named euelrAngles, it's actually Rodrigues vectors)
 	// TODO: rename the CPFE orientations variable and possibly refactor that code
 	dealii::Tensor<1, dim> rot;
 	rot.clear();
-	rot[0] = cpfe_orientations.eulerAngles[materialID][0];
-	rot[1] = cpfe_orientations.eulerAngles[materialID][1];
-	rot[2] = cpfe_orientations.eulerAngles[materialID][2];
+	rot[0] = this->cpfe_orientations->eulerAngles[materialID][0];
+	rot[1] = this->cpfe_orientations->eulerAngles[materialID][1];
+	rot[2] = this->cpfe_orientations->eulerAngles[materialID][2];
 	dealii::Tensor<2, dim> rotmat;
 	rotmat.clear();
-	rodrigues_to_rotmat(&rotmat, rot);
+	rodrigues_to_rotmat(rotmat, rot);
 
 	// Get the twin direction and twin normal in the crystal frame (for this variant)
 	// TODO: get td and tn from the CPFE input files instead of parameters_pf.prm
@@ -148,7 +148,7 @@ void customPDE<dim,degree>::explicitEquationRHS(variableContainer<dim,degree,dea
 	Ltens.clear();
 	K.clear();
 
-	for (unsigned int i = 0; i < dim, i++)
+	for (unsigned int i = 0; i < dim; i++)
 	    for (unsigned int j = 0; j < dim; j++)
 		      for (unsigned int k = 0; k < dim; k++)
 				      for (unsigned int a = 0; a < dim; a++)
@@ -269,6 +269,95 @@ scalarvalueType_pf dndt = variable_list.get_scalar_value(1);
 
 // The strain contribiution to the driving force
 scalarvalueType_pf strain_df= variable_list.get_scalar_value(2);
+
+	// Get the materialID (a.k.a. grainID) from CPFE for this mesh point
+	double coords[3] = {q_point_loc[0], q_point_loc[1], q_point_loc[2]};
+	int materialID = this->cpfe_orientations->getMaterialID(coords);
+
+	// Get the crystal orientation as a Rodrigues vector from CPFE
+	// (note: although the variable is named euelrAngles, it's actually Rodrigues vectors)
+	// TODO: rename the CPFE orientations variable and possibly refactor that code
+	dealii::Tensor<1, dim> rot;
+	rot.clear();
+	rot[0] = this->cpfe_orientations->eulerAngles[materialID][0];
+	rot[1] = this->cpfe_orientations->eulerAngles[materialID][1];
+	rot[2] = this->cpfe_orientations->eulerAngles[materialID][2];
+	dealii::Tensor<2, dim> rotmat;
+	rotmat.clear();
+	rodrigues_to_rotmat(rotmat, rot);
+
+	// Get the twin direction and twin normal in the crystal frame (for this variant)
+	// TODO: get td and tn from the CPFE input files instead of parameters_pf.prm
+	//       This will prevent accidental mismatch and reduce the effort of
+	//       adding additional twin variants
+	dealii::Tensor<1, dim> e_X = td;
+	dealii::Tensor<1, dim> e_Y = tn;
+	dealii::Tensor<1, dim> e_Z;
+
+	// Compute e_Z = e_X cross e_Y
+	e_Z[0] = e_X[1]*e_Y[2] - e_X[2]*e_Y[1];
+	e_Z[1] = e_X[2]*e_Y[0] - e_X[0]*e_Y[2];
+	e_Z[2] = e_X[0]*e_Y[1] - e_X[1]*e_Y[0];
+
+	// Normalize e_Z
+	double norm_eZ = std::sqrt(e_Z*e_Z);
+	for (unsigned int i = 0; i < dim; ++i)
+			e_Z[i] /= norm_eZ;
+	
+	// Compute Q, the rotation from twin frame to crystal frame
+	dealii::Tensor<2, dim> Q;
+	for (unsigned int i = 0; i < dim; ++i) {
+			Q[i][0] = e_X[i];
+			Q[i][1] = e_Y[i];
+			Q[i][2] = e_Z[i];
+	}
+
+	// Compute Q^T
+	dealii::Tensor<2, dim> Q_T;
+	for (unsigned int i = 0; i < dim; ++i)
+			for (unsigned int j = 0; j < dim; ++j)
+					Q_T[i][j] = Q[j][i];
+
+	// Rotate Kij and Lij from the twin frame to the crystal frame
+	//  Ltens_ccref = Q * Lij_tp * Q^T
+	dealii::Tensor<2, dim> temp1;
+	dealii::Tensor<2, dim> Ltens_ccref;
+	dealii::Tensor<2, dim> temp2;
+	dealii::Tensor<2, dim> K_ccref;
+	temp1.clear();
+	temp2.clear();
+	Ltens_ccref.clear();
+	K_ccref.clear();
+	for (unsigned int i = 0; i < dim; ++i)
+			for (unsigned int j = 0; j < dim; ++j)
+					for (unsigned int k = 0; k < dim; ++k)
+					  {
+							temp1[i][j] += Q[i][k] * Lij_tp[k][j];
+							temp2[i][j] += Q[i][k] * Kij_tp[k][j];
+						}
+
+	for (unsigned int i = 0; i < dim; ++i)
+			for (unsigned int j = 0; j < dim; ++j)
+					for (unsigned int k = 0; k < dim; ++k)
+					  {
+							Ltens_ccref[i][j] += temp1[i][k] * Q_T[k][j];
+							K_ccref[i][j]     += temp2[i][k] * Q_T[k][j];
+						}
+
+	// Rotate Kij and Lij from the crystal frame to the sample frame
+	dealii::Tensor<2, dim> Ltens, K;
+	Ltens.clear();
+	K.clear();
+
+	for (unsigned int i = 0; i < dim; i++)
+	    for (unsigned int j = 0; j < dim; j++)
+		      for (unsigned int k = 0; k < dim; k++)
+				      for (unsigned int a = 0; a < dim; a++)
+								{
+									// K_ij = R * K' * R^T = R_ik K'_ka R_ja
+									K[i][j]     += rotmat[i][k]*K_ccref[k][a]*rotmat[j][a];
+									Ltens[i][j] += rotmat[i][k]*Ltens_ccref[k][a]*rotmat[j][a];
+								}
 
 // --- Setting the expressions for the terms in the governing equations ---
 

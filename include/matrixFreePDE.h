@@ -183,7 +183,8 @@ public:
    * input files. Note that the CPFE mesh is likely not the same as the PF mesh,
    * so use getMaterialID(coord) and then access eulerAngles[materialID]
    */
-  crystalOrientationsIO<dim> &cpfe_orientations;
+  // TODO: convert this into a shared_ptr<> because this is not memory-safe
+  crystalOrientationsIO<dim> *cpfe_orientations;
 
 protected:
   userInputParameters_pf<dim> userInputs;

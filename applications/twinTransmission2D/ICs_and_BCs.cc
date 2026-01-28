@@ -26,8 +26,7 @@ void customPDE<dim,degree>::setInitialCondition(const dealii::Point<dim> &p, con
   nc.clear(); n.clear(); n_int.clear(); td_int.clear(); tn_int.clear();
   double dist, edist;
   double b0=a0*std::sqrt((1.0-ecc*ecc));
-  double nXc, nYc, nZc, nX, nY, nZ, nZ_reg;
-  double pi = 3.14159265358979323846;
+  double nX, nY, nZ, nZ_reg;
   scalar_IC = 0;
 
   if (index==0){
@@ -44,16 +43,20 @@ void customPDE<dim,degree>::setInitialCondition(const dealii::Point<dim> &p, con
     nc[0] = (p[0]-center[0]*userInputs_pf.domain_size[0])/(dist + 1.0e-7);
     nc[1] = (p[1]-center[1]*userInputs_pf.domain_size[1])/(dist + 1.0e-7);
     nc[2] = (p[2]-center[2]*userInputs_pf.domain_size[2])/(dist + 1.0e-7);
+	
+    // Get the materialID (a.k.a. grainID) from CPFE for this mesh point
+	  double coords[3] = {p[0], p[1], p[2]};
+	  int materialID = this->cpfe_orientations->getMaterialID(coords);
 
     //Rotating td and tn according to parent grain orientation
     dealii::Tensor<1, dim> rot;
-	rot.clear();
-	rot[0] = cpfe_orientations.eulerAngles[materialID][0];
-	rot[1] = cpfe_orientations.eulerAngles[materialID][1];
-	rot[2] = cpfe_orientations.eulerAngles[materialID][2];
-	dealii::Tensor<2, dim> rotmat;
-	rotmat.clear();
-	rodrigues_to_rotmat(&rotmat, rot);
+	  rot.clear();
+	  rot[0] = this->cpfe_orientations->eulerAngles[materialID][0];
+	  rot[1] = this->cpfe_orientations->eulerAngles[materialID][1];
+	  rot[2] = this->cpfe_orientations->eulerAngles[materialID][2];
+	  dealii::Tensor<2, dim> rotmat;
+	  rotmat.clear();
+	  rodrigues_to_rotmat(rotmat, rot);
 
     //Rotated normal vector, tn_int
     for (unsigned int i = 0; i < dim; ++i)
