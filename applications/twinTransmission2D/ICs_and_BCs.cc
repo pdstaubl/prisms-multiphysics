@@ -46,7 +46,7 @@ void customPDE<dim,degree>::setInitialCondition(const dealii::Point<dim> &p, con
 	
     // Get the materialID (a.k.a. grainID) from CPFE for this mesh point
 	  double coords[3] = {p[0], p[1], p[2]};
-	  int materialID = this->cpfe_orientations->getMaterialID(coords);
+	  unsigned int materialID = this->cpfe_orientations->getMaterialID(coords);
 
     //Rotating td and tn according to parent grain orientation
     dealii::Tensor<1, dim> rot;

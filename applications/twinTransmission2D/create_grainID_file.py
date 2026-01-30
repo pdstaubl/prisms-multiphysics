@@ -3,8 +3,8 @@ import numpy as np
 # Create a pseudo-2D bicrystal structure
 # Domain size, in voxels
 size_x = 64
-size_y = 256
-size_z = 1
+size_y = 128
+size_z = 4
 
 # The grain ID values to use, as strings (must be strings! use quotes)
 upper_grain_ID = "1"

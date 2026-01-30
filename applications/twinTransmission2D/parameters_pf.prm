@@ -14,8 +14,8 @@ set Number of dimensions = 3
 # =================================================================================
 # Each axes spans from zero to the specified length
 set Domain size X = 1.0
-set Domain size Y = 4.0
-set Domain size Z = 0.015625
+set Domain size Y = 2.0
+set Domain size Z = 0.0625
 
 # =================================================================================
 # Set the element parameters
@@ -24,8 +24,8 @@ set Domain size Z = 0.015625
 # Subdivisions Z ignored in 2D
 # For optimal performance, use refineFactor primarily to determine the element size
 set Subdivisions X = 64
-set Subdivisions Y = 256
-set Subdivisions Z = 1
+set Subdivisions Y = 128
+set Subdivisions Z = 4
 
 set Refine factor = 1
 
@@ -36,14 +36,14 @@ set Element degree = 1
 # Set the time step parameters
 # =================================================================================
 # The size of the time step
-set Time step = 2.5e-4
+set Time step = 2.5e-5
 
 # The simulation ends when either the number of time steps is reached or the
 # simulation time is reached.
-set Number of time steps = 20000
+set Number of time steps = 200000
 
 # The number of phase field steps per CPFE step
-set Number of phase field steps per CPFE step = 400
+set Number of phase field steps per CPFE step = 4000
 
 # =================================================================================
 # Set the output parameters

@@ -85,7 +85,7 @@ void customPDE<dim,degree>::explicitEquationRHS(variableContainer<dim,degree,dea
 
 		// Get the materialID (a.k.a. grainID) from CPFE for this mesh point
 		double coords[3] = {q_point_loc[0][v], q_point_loc[1][v], q_point_loc[2][v]};
-		int materialID = this->cpfe_orientations->getMaterialID(coords);
+		unsigned int materialID = this->cpfe_orientations->getMaterialID(coords);
 
 		// Get the crystal orientation as a Rodrigues vector from CPFE
 		// (note: although the variable is named euelrAngles, it's actually Rodrigues vectors)
@@ -295,7 +295,7 @@ for (unsigned int v = 0; v < q_point_loc[0].size(); v++) {
 
 	// Get the materialID (a.k.a. grainID) from CPFE for this mesh point
 	double coords[3] = {q_point_loc[0][v], q_point_loc[1][v], q_point_loc[2][v]};
-	int materialID = this->cpfe_orientations->getMaterialID(coords);
+	unsigned int materialID = this->cpfe_orientations->getMaterialID(coords);
 
 	// Get the crystal orientation as a Rodrigues vector from CPFE
 	// (note: although the variable is named euelrAngles, it's actually Rodrigues vectors)
