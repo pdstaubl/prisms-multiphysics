@@ -36,14 +36,14 @@ set Element degree = 1
 # Set the time step parameters
 # =================================================================================
 # The size of the time step
-set Time step = 2.5e-5
+set Time step = 5e-5
 
 # The simulation ends when either the number of time steps is reached or the
 # simulation time is reached.
-set Number of time steps = 200000
+set Number of time steps = 40000
 
 # The number of phase field steps per CPFE step
-set Number of phase field steps per CPFE step = 4000
+set Number of phase field steps per CPFE step = 200
 
 # =================================================================================
 # Set the output parameters
@@ -129,7 +129,7 @@ set Model constant l0 = 1.0e-6, DOUBLE
 set Model constant a0 = 0.2, DOUBLE
 
 # eccentricity of the elliptical seed
-set Model constant ecc = 0.9, DOUBLE
+set Model constant ecc = 0.0, DOUBLE
 
 # Regularization value
 set Model constant regval = 1.0e-8, DOUBLE

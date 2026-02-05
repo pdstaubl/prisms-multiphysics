@@ -108,6 +108,54 @@ void customPDE<dim,degree>::setInitialCondition(const dealii::Point<dim> &p, con
     scalar_IC =  0.5*(1.0-std::tanh((dist-edist)/(1.0*del0*std::sqrt(edist/a0))));
 
     if (scalar_IC > 1.0) scalar_IC = 1.0;
+
+    // If the grain ID at this point has not been registered in the Kij and Lij maps, add it
+    if (Kij_map.count(materialID) == 0) {
+  		// Rotate Kij and Lij from the twin frame to the crystal frame
+	  	//  Ltens_ccref = Q * Lij_tp * Q^T
+		  dealii::Tensor<2, dim> temp1;
+		  dealii::Tensor<2, dim> Ltens_ccref;
+		  dealii::Tensor<2, dim> temp2;
+		  dealii::Tensor<2, dim> K_ccref;
+		  temp1.clear();
+		  temp2.clear();
+		  Ltens_ccref.clear();
+		  K_ccref.clear();
+		  for (unsigned int i = 0; i < dim; ++i)
+			  	for (unsigned int j = 0; j < dim; ++j)
+				  		for (unsigned int k = 0; k < dim; ++k)
+					  		{
+						  		temp1[i][j] += Q[i][k] * Lij_tp[k][j];
+							  	temp2[i][j] += Q[i][k] * Kij_tp[k][j];
+							  }
+
+	  	for (unsigned int i = 0; i < dim; ++i)
+		  		for (unsigned int j = 0; j < dim; ++j)
+			  			for (unsigned int k = 0; k < dim; ++k)
+				  			{
+					  			Ltens_ccref[i][j] += temp1[i][k] * Q[j][k]; // Note, Q[j][k] is Q^T, the transpose
+						  		K_ccref[i][j]     += temp2[i][k] * Q[j][k];
+						  	}
+
+  		// Rotate Kij and Lij from the crystal frame to the sample frame
+	  	dealii::Tensor<2, dim> Ltens, K;
+		  Ltens.clear();
+		  K.clear();
+
+		  for (unsigned int i = 0; i < dim; i++)
+			  	for (unsigned int j = 0; j < dim; j++)
+				  		for (unsigned int k = 0; k < dim; k++)
+					  			for (unsigned int a = 0; a < dim; a++)
+						  			{
+							  			// K_ij = R * K' * R^T = R_ik K'_ka R_ja
+								  		K[i][j]     += rotmat[i][k]*K_ccref[k][a]*rotmat[j][a];
+									  	Ltens[i][j] += rotmat[i][k]*Ltens_ccref[k][a]*rotmat[j][a];
+									  }
+      
+      // Save the values to the maps
+      this->Kij_map[materialID] = K;
+      this->Lij_map[materialID] = Ltens;
+    }
                      
   } else {
     scalar_IC = 0.0;

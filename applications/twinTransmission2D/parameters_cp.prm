@@ -88,9 +88,9 @@ set Use Simple BCs                               = false
 
 set Use velocity gradient BC                     = true
 
-set Velocity gradient row 1                      = 0, 2.5e-5, 0
+set Velocity gradient row 1                      = 0, 5e-5, 0
 
-set Velocity gradient row 2                      = 2.5e-5, 0, 0
+set Velocity gradient row 2                      = 5e-5, 0, 0
 
 set Velocity gradient row 3                      = 0, 0, 0
 
@@ -127,10 +127,10 @@ set Quarter cycle time                           = 1.2
 set Time increment                              = 1.0
 
 #delta T for every pf increment after phase-field coupling
-set Time increment after phase-field coupling   = 0.1
+set Time increment after phase-field coupling   = 0.01
 
 #Total simulation time
-set Total time                                   = 10
+set Total time                                   = 22
 
 # Maximum iterations for linear solver
 set Maximum linear solver iterations             = 1000000
@@ -146,10 +146,10 @@ set Maximum non linear iterations                = 15
 ####################################
 
 # Deformation time prior to introducing a twin seed
-set Seeding time                                  = 8
+set Seeding time                                  = 20
 
 # Deformation time prior to coupling of PF and CPFE equations (after initial deformation with or without twin seed)
-set Time before coupling                          = 8
+set Time before coupling                          = 20
 
 ####################################
 # Elasticity parameters

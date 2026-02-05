@@ -82,6 +82,10 @@ private:
     // A function for this subclass to convert Rodrigues vectors to rotation matrices
     void rodrigues_to_rotmat(dealii::Tensor<2, dim> &OrientationMatrix, dealii::Tensor<1, dim> r) const;
 
+    // Containers to store the K and L tensors for each grainID
+    mutable std::map<unsigned int, dealii::Tensor<2,dim>> Kij_map = {};
+    mutable std::map<unsigned int, dealii::Tensor<2,dim>> Lij_map = {};
+
 	// ================================================================
 };
 
